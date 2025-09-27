@@ -379,7 +379,7 @@ export default function ProductDetailPage() {
       <MobileLayout>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center">
           <div className="text-center space-y-4">
-            <Loader className="h-8 w-8 animate-spin mx-auto text-primary" />
+            <Loader className="h-8 w-8 animate-spin mx-auto border-black" />
             <p className="text-muted-foreground">Loading product details...</p>
           </div>
         </div>
@@ -405,12 +405,12 @@ export default function ProductDetailPage() {
       <div className="min-h-screen bg-white dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
      
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="container mx-auto px-2 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
           {/* Image Gallery */}
           <div className="space-y-4 animate-fade-in">
             {/* Main Image/Video */}
-            <div className="relative h-96 lg:h-[500px] bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl overflow-hidden shadow-2xl group border border-white/20 backdrop-blur-sm">
+            <div className="relative h-96 lg:h-[500px] bg-transparent rounded-lg overflow-hidden shadow-none group border border-white/20 backdrop-blur-sm">
               {showVideo && product.videos && product.videos.length > 0 ? (
                 <VideoPlayer
                   src={product.videos[0]}
@@ -432,16 +432,19 @@ export default function ProductDetailPage() {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                   >
-                    <img
-                      src={product.images[selectedImage]}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-all duration-500 ease-out select-none"
-                      style={{
-                        transform: `scale(${zoomScale}) rotate(${rotation}deg) translate(${zoomPosition.x}px, ${zoomPosition.y}px)`,
-                        transformOrigin: 'center center'
-                      }}
-                      draggable={false}
-                    />
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={product.images[selectedImage]}
+                        alt={product.name}
+                        fill
+                        className="object-contain transition-all duration-500 ease-out select-none"
+                        style={{
+                          transform: `scale(${zoomScale}) rotate(${rotation}deg) translate(${zoomPosition.x}px, ${zoomPosition.y}px)`,
+                          transformOrigin: 'center center'
+                        }}
+                        draggable={false}
+                      />
+                    </div>
                                         
                     {/* Zoom indicator */}
                     {isZoomed && (
@@ -453,7 +456,8 @@ export default function ProductDetailPage() {
 
                   {/* Zoom Controls */}
                   {isZoomed && (
-                    <div className="absolute top-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 shadow-xl border border-white/20 animate-slideDown">
+                    <div className="absolute top-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 shadow-none
+                     border border-white/20 animate-slideDown">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -462,7 +466,7 @@ export default function ProductDetailPage() {
                         disabled={zoomScale >= 3}
                         title="Zoom In"
                       >
-                        <ZoomIn className="h-4 w-4 text-primary" />
+                        <ZoomIn className="h-4 w-4 border-black" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -472,7 +476,7 @@ export default function ProductDetailPage() {
                         disabled={zoomScale <= 1}
                         title="Zoom Out"
                       >
-                        <ZoomOut className="h-4 w-4 text-primary" />
+                        <ZoomOut className="h-4 w-4 border-black" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -481,7 +485,7 @@ export default function ProductDetailPage() {
                         onClick={handleRotate}
                         title="Rotate"
                       >
-                        <RotateCw className="h-4 w-4 text-primary" />
+                        <RotateCw className="h-4 w-4 border-black" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -502,19 +506,19 @@ export default function ProductDetailPage() {
                         variant="ghost"
                         size="sm"
                         onClick={previousImage}
-                        className="absolute left-2 lg:left-4 top-1/2 transform -translate-y-1/2 h-10 w-10 lg:h-12 lg:w-12 p-0 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 shadow-xl border border-white/20 backdrop-blur-sm rounded-full"
+                        className="absolute left-2 lg:left-4 top-1/2 transform -translate-y-1/2 h-10 w-10 lg:h-12 lg:w-12 p-0 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 shadow-none border border-white/20 backdrop-blur-sm rounded-full"
                         title="Previous Image"
                       >
-                        <ChevronLeft className="h-5 w-5 lg:h-6 lg:w-6 text-primary" />
+                        <ChevronLeft className="h-5 w-5 lg:h-6 lg:w-6 border-black" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={nextImage}
-                        className="absolute right-2 lg:right-4 top-1/2 transform -translate-y-1/2 h-10 w-10 lg:h-12 lg:w-12 p-0 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 shadow-xl border border-white/20 backdrop-blur-sm rounded-full"
+                        className="absolute right-2 lg:right-4 top-1/2 transform -translate-y-1/2 h-10 w-10 lg:h-12 lg:w-12 p-0 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 shadow-none border border-white/20 backdrop-blur-sm rounded-full"
                         title="Next Image"
                       >
-                        <ChevronRight className="h-5 w-5 lg:h-6 lg:w-6 text-primary" />
+                        <ChevronRight className="h-5 w-5 lg:h-6 lg:w-6 border-black" />
                       </Button>
                     </>
                   )}
@@ -524,7 +528,7 @@ export default function ProductDetailPage() {
                     <Button
                       variant="ghost"
                       onClick={() => setShowVideo(true)}
-                      className="absolute bottom-4 right-4 h-14 w-14 p-0 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-500 text-primary-foreground rounded-full hover:scale-110 transition-all duration-300 shadow-2xl border-2 border-white/20 animate-pulse"
+                      className="absolute bottom-4 right-4 h-14 w-14 p-0 bg-black hover:bg-black/90 border-black-foreground rounded-full hover:scale-110 transition-all duration-300 shadow-2xl border-2 border-white/20 animate-pulse"
                     >
                       <Play className="h-7 w-7 ml-1" />
                     </Button>
@@ -546,15 +550,19 @@ export default function ProductDetailPage() {
                   }}
                   className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 p-0 rounded-xl overflow-hidden border-2 hover:scale-110 transition-all duration-300 shadow-lg ${
                     selectedImage === index && !showVideo
-                      ? 'border-primary shadow-xl ring-2 ring-primary/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+                      ? 'border-black shadow-none ring-2 ring-primary/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-black/50'
                   }`}
                 >
-                  <img
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 80px"
+                    />
+                  </div>
                 </Button>
               ))}
               {/* Video Thumbnail */}
@@ -563,14 +571,18 @@ export default function ProductDetailPage() {
                   variant="ghost"
                   onClick={() => setShowVideo(true)}
                   className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 p-0 rounded-xl overflow-hidden border-2 relative hover:scale-110 transition-all duration-300 shadow-lg ${
-                    showVideo ? 'border-primary shadow-xl ring-2 ring-primary/20' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+                    showVideo ? 'border-black shadow-none ring-2 ring-primary/20' : 'border-gray-200 dark:border-gray-700 hover:border-black/50'
                   }`}
                 >
-                  <img
-                    src={product.images[0]}
-                    alt="Video thumbnail"
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={product.images[0]}
+                      alt="Video thumbnail"
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 80px"
+                    />
+                  </div>
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
                     <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white drop-shadow-lg" />
                   </div>
@@ -630,7 +642,7 @@ export default function ProductDetailPage() {
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-4 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-                <h3 className="text-sm font-semibold text-foreground">Color: <span className="text-primary">{selectedColor}</span></h3>
+                <h3 className="text-sm font-semibold text-foreground">Color: <span className="text-black">{selectedColor}</span></h3>
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.colors.map((color, index) => (
                     <Button
@@ -639,8 +651,8 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedColor(color)}
                       className={`px-4 sm:px-6 py-2 sm:py-3 text-sm font-medium transition-all duration-300 hover:scale-105 border-2 rounded-xl ${
                         selectedColor === color
-                          ? 'border-primary bg-gradient-to-r from-primary/10 to-blue-100 dark:to-blue-900 text-primary shadow-lg ring-2 ring-primary/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                          ? 'border-black bg-black text-white'
+                          : 'border-slate-300'
                       }`}
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
@@ -654,7 +666,7 @@ export default function ProductDetailPage() {
             {/* Size Selection */}
             {product.sizes && product.sizes.length > 0 && (
               <div className="space-y-4 animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-                <h3 className="text-sm font-semibold text-foreground">Size: <span className="text-primary">{selectedSize}</span></h3>
+                <h3 className="text-sm font-semibold text-foreground">Size: <span className="text-black">{selectedSize}</span></h3>
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizes.map((size, index) => (
                     <Button
@@ -663,8 +675,8 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`px-4 sm:px-6 py-2 sm:py-3 text-sm font-medium transition-all duration-300 hover:scale-105 border-2 rounded-xl ${
                         selectedSize === size
-                          ? 'border-primary bg-gradient-to-r from-primary/10 to-blue-100 dark:to-blue-900 text-primary shadow-lg ring-2 ring-primary/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                          ? 'border-black bg-black text-white shadow-lg ring-2 ring-black/20'
+                          : 'border-gray-200 '
                       }`}
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
@@ -678,13 +690,13 @@ export default function ProductDetailPage() {
             {/* Quantity */}
             <div className="space-y-4 animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
               <h3 className="text-sm font-semibold text-foreground">Quantity</h3>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
                 <div className="flex items-center border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="h-12 w-12 p-0 hover:bg-primary/10 transition-all duration-200 text-primary border-r border-gray-200 dark:border-gray-700 rounded-none"
+                    className="h-12 w-12 p-0 hover:bg-primary/10 transition-all duration-200 border-black  dark:border-gray-700 rounded-none shadow-none"
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -693,7 +705,7 @@ export default function ProductDetailPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setQuantity(quantity + 1)}
-                    className="h-12 w-12 p-0 hover:bg-primary/10 transition-all duration-200 text-primary border-l border-gray-200 dark:border-gray-700 rounded-none"
+                    className="h-12 w-12 p-0 hover:bg-primary/10 transition-all duration-200  border-l border-gray-200 dark:border-gray-700 rounded-none"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -715,16 +727,16 @@ export default function ProductDetailPage() {
             <div className="space-y-4 animate-fadeInUp" style={{ animationDelay: '0.5s' }}>
               <Button
                 size="lg"
-                className={`w-full text-lg font-semibold transition-all duration-300 shadow-xl h-14 rounded-xl ${
+                className={`w-full text-lg font-semibold transition-all duration-300 shadow-none h-14 rounded-xl ${
                   addedToCart 
                     ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700' 
-                    : 'bg-black hover:shadow-2xl'
+                    : 'bg-black hover:shadow-xl hover:bg-transparent hover:text-black hover:border-1'
                 } border-0 text-white`}
                 disabled={!product.inStock}
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="h-6 w-6 mr-3" />
-                {addedToCart ? '✓ Added to Cart!' : `Add to Cart - ${formatPrice(product.price * quantity, adminState.settings?.currency || 'USD')}`}
+                {addedToCart ? '✓ Added to Cart!' : `Add to Cart - ${formatPrice(product.price * quantity, adminState.settings?.currency || 'BDT')}`}
               </Button>
               <Button 
                 variant="outline" 
@@ -732,7 +744,7 @@ export default function ProductDetailPage() {
                 className={`w-full transition-all duration-300 hover:scale-[1.02] h-14 rounded-xl border-2 font-semibold ${
                   isWishlisted 
                     ? 'border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 bg-red-50/50 dark:bg-red-950/20' 
-                    : 'border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-black hover:bg-primary/5'
                 }`}
                 onClick={handleWishlist}
               >
@@ -745,9 +757,9 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Product Details Tabs */}
-        <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
+        <Card className="bg-white shadow-none border-none dark:bg-gray-800/70 backdrop-blur-xl animate-fadeInUp " style={{ animationDelay: '0.3s' }}>
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 overflow-x-auto scrollbar-hide">
+          <div className="flex border-b border-gray-200 dark:border-gray-700 bg-white overflow-x-auto scrollbar-hide">
             {[
               { key: 'description', label: 'Description', shortLabel: 'Desc' },
               { key: 'specifications', label: 'Specifications', shortLabel: 'Specs' },
@@ -759,8 +771,8 @@ export default function ProductDetailPage() {
                 onClick={() => setActiveTab(key as any)}
                 className={`flex-shrink-0 px-3 sm:px-6 md:px-8 py-3 sm:py-4 md:py-5 text-xs sm:text-sm font-semibold rounded-none transition-all duration-300 min-w-fit ${
                   activeTab === key
-                    ? 'border-b-2 sm:border-b-3 border-primary text-primary bg-gradient-to-b from-primary/10 to-transparent shadow-lg'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-primary/5 hover:scale-105'
+                    ? 'border-b-2 sm:border-b-3 border-black bg-white shadow-lg'
+                    : 'text-muted-foreground hover:text-foreground hover:scale-105'
                 }`}
               >
                 <span className="block sm:hidden">{shortLabel}</span>
@@ -770,7 +782,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Tab Content */}
-          <CardContent className="p-4 sm:p-6 md:p-8">
+          <CardContent className="p-4 sm:p-6 md:p-8 shadow-none border-none">
             {activeTab === 'description' && (
               <div className="space-y-4 sm:space-y-6 animate-fade-in">
                 <div>
@@ -819,7 +831,7 @@ export default function ProductDetailPage() {
                         className="flex flex-col sm:flex-row sm:justify-between py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 animate-slideIn group"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
-                        <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm sm:text-base mb-1 sm:mb-0">{key}:</span>
+                        <span className="font-semibold text-foreground group-hover:border-black transition-colors text-sm sm:text-base mb-1 sm:mb-0">{key}:</span>
                         <span className="text-muted-foreground font-medium text-sm sm:text-base">{value}</span>
                       </div>
                     ))}
@@ -841,11 +853,11 @@ export default function ProductDetailPage() {
                   <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-foreground">Customer Reviews</h3>
                   
                   {/* Rating Summary */}
-                  <Card className="bg-gradient-to-br from-primary/5 to-blue-50 dark:from-primary/10 dark:to-blue-950 border border-primary/20 mb-6 sm:mb-8 shadow-lg">
-                    <CardContent className="p-4 sm:p-6">
+                  <Card className="bg-gradient-to-br from-primary/5 to-blue-50 dark:from-primary/10 dark:to-blue-950 border border-black/20 mb-6 sm:mb-8 shadow-none border-none">
+                    <CardContent className=" shadow-none border-none p-4 sm:p-6">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                         <div className="text-center">
-                          <div className="text-3xl sm:text-4xl font-bold text-primary animate-bounce-in mb-2">{product.rating}</div>
+                          <div className="text-3xl sm:text-4xl font-bold border-black animate-bounce-in mb-2">{product.rating}</div>
                           <div className="flex justify-center mb-2">
                             {renderStars(product.rating)}
                           </div>
@@ -881,10 +893,10 @@ export default function ProductDetailPage() {
                           {product.reviewsList.map((review, index) => (
                             <Card 
                               key={review.id} 
-                              className="border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 animate-slideIn bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:scale-[1.02]"
+                              className="border border-gray-200 dark:border-gray-700 shadow-none border-none hover:shadow-none transition-all duration-300 animate-slideIn bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:scale-[1.02]"
                               style={{ animationDelay: `${index * 0.15}s` }}
                             >
-                              <CardContent className="p-4 sm:p-6">
+                              <CardContent className="shadow-none border-none p-4 sm:p-6">
                                 <div className="flex items-start justify-between mb-3 sm:mb-4">
                                   <div className="flex items-center gap-3 sm:gap-4">
                                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg">
@@ -912,7 +924,7 @@ export default function ProductDetailPage() {
                                   <Button 
                                     variant="ghost" 
                                     size="sm"
-                                    className="text-muted-foreground hover:text-primary p-0 h-auto font-normal hover:bg-primary/5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-200"
+                                    className="text-muted-foreground hover:border-black p-0 h-auto font-normal hover:bg-primary/5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-200"
                                   >
                                     <ThumbsUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                                     Helpful ({review.helpful})
@@ -939,18 +951,18 @@ export default function ProductDetailPage() {
         {/* Recommended Products Section */}
         <div className="mt-16 animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
           <h2 className="text-2xl md:text-3xl font-bold mb-8 text-foreground flex items-center">
-            <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-black from-primary  bg-clip-text text-transparent">
               Recommended For You
             </span>
-            <span className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent ml-4"></span>
+            <span className="h-px flex-1 bg-black to-transparent ml-4"></span>
           </h2>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {products
               .filter(p => p.category === product.category && p.id !== product.id)
               .slice(0, 4)
               .map((item) => (
-                <Card key={item.id} className="group h-full hover:shadow-lg transition-all duration-300 border-0 p-0">
+                <Card key={item.id} className="group h-full shadow-none border-none transition-all duration-300 border-0 p-0">
                   <div className="relative h-full flex flex-col">
                     {/* Product Image */}
                     <Link href={`/products/${item.id}`} className="block">
@@ -959,7 +971,7 @@ export default function ProductDetailPage() {
                           src={item.image}
                           alt={item.name}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
                           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         />
                       </div>
@@ -1005,6 +1017,46 @@ export default function ProductDetailPage() {
                             </span>
                           )}
                         </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="mt-3 space-y-2">
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-gray-900 hover:bg-gray-800 text-white"
+                          disabled={!item.inStock}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addItem(item, 1);
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Add to Cart
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (isInWishlist(item.id)) {
+                              removeFromWishlist(item.id);
+                            } else {
+                              addToWishlist(item);
+                            }
+                          }}
+                          className={`w-full transition-all duration-200 ${
+                            isInWishlist(item.id) 
+                              ? 'border-red-200 text-red-600 hover:bg-red-50 bg-red-50/50' 
+                              : 'border-gray-200 hover:border-red-200 hover:text-red-600'
+                          }`}
+                        >
+                          <Heart className={`h-4 w-4 mr-2 transition-all duration-200 ${
+                            isInWishlist(item.id) ? 'fill-current text-red-500' : ''
+                          }`} />
+                          {isInWishlist(item.id) ? 'Saved' : 'Save'}
+                        </Button>
                       </div>
                     </div>
                   </div>

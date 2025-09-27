@@ -2,11 +2,10 @@
 
 import { Suspense, useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import ProductGrid from '@/components/product/ProductGrid';
 import CategoryFilter from '@/components/product/CategoryFilter';
 import { products, categories } from '@/data/products';
-import { Search, SlidersHorizontal, Loader2, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2, ChevronDown, X } from 'lucide-react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useSearchParams } from 'next/navigation';
 
@@ -17,6 +16,8 @@ function ProductsContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]); // Default price range
+  const [showPriceFilter, setShowPriceFilter] = useState(false);
   
   // Pagination state
   const [itemsPerPage, setItemsPerPage] = useState(12);
@@ -27,18 +28,23 @@ function ProductsContent() {
   useEffect(() => {
     const search = searchParams.get('search');
     const category = searchParams.get('category');
+    const sort = searchParams.get('sort');
+    
     if (search) {
       setSearchQuery(search);
     }
     if (category && category !== 'all') {
       setSelectedCategory(category);
     }
+    if (sort) {
+      setSortBy(sort);
+    }
   }, [searchParams]);
 
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, searchQuery, sortBy, priceRange]);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -60,6 +66,11 @@ function ProductsContent() {
       );
     }
 
+    // Filter by price range
+    filtered = filtered.filter(product => 
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+
     // Sort products
     switch (sortBy) {
       case 'price-low':
@@ -72,13 +83,27 @@ function ProductsContent() {
         filtered = [...filtered].sort((a, b) => b.rating - a.rating);
         break;
       case 'newest':
+        // Filter to show only new arrivals and sort by arrival date (newest first)
+        filtered = filtered.filter(product => product.isNewArrival);
+        filtered = [...filtered].sort((a, b) => {
+          // If both products have arrival dates, sort by date (newest first)
+          if (a.arrivalDate && b.arrivalDate) {
+            return new Date(b.arrivalDate).getTime() - new Date(a.arrivalDate).getTime();
+          }
+          // If only one has an arrival date, prioritize it
+          if (a.arrivalDate) return -1;
+          if (b.arrivalDate) return 1;
+          // If neither has an arrival date, keep original order
+          return 0;
+        });
+        break;
       default:
         // Default sorting (featured)
         filtered = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
 
     return filtered;
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, searchQuery, sortBy, priceRange]);
 
   // Paginated products for display
   const paginatedProducts = useMemo(() => {
@@ -107,29 +132,26 @@ function ProductsContent() {
     setCurrentPage(1);
   };
 
+  // Handle price range change
+  const handlePriceRangeChange = (min: number, max: number) => {
+    setPriceRange([min, max]);
+  };
+
+  // Reset price filter
+  const resetPriceFilter = () => {
+    // Find min and max prices in all products
+    const prices = products.map(p => p.price);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    setPriceRange([minPrice, maxPrice]);
+  };
+
   return (
     <MobileLayout>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-2 py-2">
         {/* Search and filter bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search products by name, category, or features..."
-              className="pl-11 pr-4 py-3 w-full text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+         
           
           {/* Mobile filter toggle */}
           <Button
@@ -152,6 +174,93 @@ function ProductsContent() {
                 selectedCategory={selectedCategory}
                 onCategoryChange={setSelectedCategory}
               />
+              
+              {/* Price Range Filter */}
+              <div className="bg-white rounded-lg  p-6 mt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Price Range</h3>
+                  {(priceRange[0] > 0 || priceRange[1] < 200) && (
+                    <button 
+                      onClick={resetPriceFilter}
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                      aria-label="Reset price filter"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Reset
+                    </button>
+                  )}
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">Min: ৳{priceRange[0]}</span>
+                      <span className="text-sm font-medium text-gray-700">Max: ৳{priceRange[1]}</span>
+                    </div>
+                    <div className="relative pt-1">
+                      <label htmlFor="minPriceRange" className="sr-only">Minimum price</label>
+                      <input
+                        type="range"
+                        id="minPriceRange"
+                        min="0"
+                        max="200"
+                        value={priceRange[0]}
+                        onChange={(e) => handlePriceRangeChange(Number(e.target.value), priceRange[1])}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        aria-label="Minimum price range"
+                      />
+                      <label htmlFor="maxPriceRange" className="sr-only">Maximum price</label>
+                      <input
+                        type="range"
+                        id="maxPriceRange"
+                        min="0"
+                        max="200"
+                        value={priceRange[1]}
+                        onChange={(e) => handlePriceRangeChange(priceRange[0], Number(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer absolute top-0 left-0"
+                        style={{ pointerEvents: 'none' }}
+                        aria-label="Maximum price range"
+                      />
+                      <div 
+                        className="absolute h-2 bg-blue-600 rounded-lg top-0 left-0"
+                        style={{
+                          left: `${(priceRange[0] / 200) * 100}%`,
+                          right: `${100 - (priceRange[1] / 200) * 100}%`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label htmlFor="minPrice" className="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
+                      <input
+                        type="number"
+                        id="minPrice"
+                        min="0"
+                        max="200"
+                        value={priceRange[0]}
+                        onChange={(e) => handlePriceRangeChange(Number(e.target.value), priceRange[1])}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        aria-label="Minimum price"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="maxPrice" className="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
+                      <input
+                        type="number"
+                        id="maxPrice"
+                        min="0"
+                        max="200"
+                        value={priceRange[1]}
+                        onChange={(e) => handlePriceRangeChange(priceRange[0], Number(e.target.value))}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        aria-label="Maximum price"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -305,6 +414,7 @@ function ProductsContent() {
                       onClick={() => {
                         setSelectedCategory('all');
                         setSearchQuery('');
+                        resetPriceFilter();
                       }}
                     >
                       View all products
@@ -332,5 +442,3 @@ export default function ProductsPage() {
     </Suspense>
   );
 }
-
-

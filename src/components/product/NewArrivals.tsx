@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import ProductCard from './ProductCard';
 import { Product } from '@/data/products';
 
@@ -39,14 +40,17 @@ export default function NewArrivals({
         </div>
         
         {showViewAll && (
-          <button className="mt-4 md:mt-0 text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors">
+          <Link 
+            href="/products?category=all&sort=newest"
+            className="mt-4 md:mt-0 text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
+          >
             View All New Arrivals →
-          </button>
+          </Link>
         )}
       </div>
 
       {/* Products Grid with Staggered Animation */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {displayProducts.map((product, index) => (
           <div
             key={product.id}
@@ -58,11 +62,11 @@ export default function NewArrivals({
           >
             <div className="relative">
               {/* Enhanced Product Card */}
-              <div className="relative overflow-hidden rounded-xl group-hover:shadow-xl transition-all duration-300">
+              <div className="relative overflow-hidden rounded-lg shadow-none transition-all duration-300">
                 <ProductCard product={product} />
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-lg" />
               </div>
             </div>
           </div>

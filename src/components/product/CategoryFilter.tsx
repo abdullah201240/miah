@@ -11,7 +11,7 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-lg  p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
       <div className="space-y-2">
         {categories.map((category) => (

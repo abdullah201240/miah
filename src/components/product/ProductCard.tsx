@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, Star, ShoppingCart, Eye } from 'lucide-react';
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="group h-full hover:shadow-lg transition-all duration-300 border-0 p-0">
+    <Card className="group h-full shadow-none transition-all duration-300 border-0 p-0">
       <div className="relative h-full flex flex-col">
         {/* Product Image */}
         <Link href={`/products/${product.id}`} className="block">
