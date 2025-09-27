@@ -10,6 +10,7 @@ import MobileLayout from '@/components/layout/MobileLayout';
 import PopupAd from '@/components/ui/PopupAd';
 import { featuredProducts, discountedProducts, newArrivalProducts, categories, heroSlides } from '@/data/products';
 import AdBanner from '@/components/ui/AdBanner';
+import CategoryImages from '@/components/product/CategoryImages';
 
 export default function Home() {
   return (
@@ -19,6 +20,9 @@ export default function Home() {
 
         {/* Hero Slider */}
         <HeroSlider slides={heroSlides} />
+
+        {/* Category Images Section */}
+        <CategoryImages />
 
         {/* Categories Section */}
         <section className="py-6 bg-white">
@@ -37,7 +41,7 @@ export default function Home() {
                   className="group animate-fadeInUp"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 p-0 rounded-xl overflow-hidden">
+                  <Card className="h-full shadow-none transition-all duration-300 border-0 p-0 rounded-sm overflow-hidden">
                     <CardContent className="p-0">
                       <div className="relative aspect-square overflow-hidden">
                         {category.image ? (

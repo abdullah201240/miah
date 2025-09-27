@@ -181,7 +181,7 @@ export default function PremiumHeroSlider({ slides, autoPlayInterval = 6000 }: H
             key={index}
             className={`relative overflow-hidden rounded-full transition-all duration-500 ${
               currentSlide === index
-                ? 'w-12 h-3 sm:w-16 sm:h-4 bg-gradient-to-r from-blue-500 to-purple-500'
+                ? 'w-12 h-3 sm:w-16 sm:h-4 bg-black/20'
                 : 'w-3 h-3 sm:w-4 sm:h-4 bg-white/40 hover:bg-white/60 hover:scale-125'
             }`}
             onClick={() => goToSlide(index)}
@@ -220,7 +220,7 @@ export default function PremiumHeroSlider({ slides, autoPlayInterval = 6000 }: H
           <div key={`loading-${slide.id}`} className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30">
             <div className="flex space-x-2">
               <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-black rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
               <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
             </div>
           </div>
