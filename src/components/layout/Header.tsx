@@ -173,8 +173,8 @@ export default function Header() {
   const displayCategories = categories.filter(cat => cat.id !== 'all');
 
   return (
-    <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'shadow-lg backdrop-blur-sm bg-white/95' : 'shadow-sm'
+    <header className={`bg-white  sticky top-0 z-50 transition-all duration-300 ${
+      isScrolled ? 'shadow-sm backdrop-blur-sm bg-white/95' : 'shadow-sm'
     }`}>
       {/* Main header */}
       <div className="container mx-auto px-4 xl:px-6 py-4 lg:py-5">
@@ -201,14 +201,12 @@ export default function Header() {
             <Button
               variant="outline"
               size="lg"
-              className={`flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-all duration-300 hover:shadow-md hover:scale-105 border-gray-300 ${
-                isCategoryDropdownOpen ? 'bg-blue-50 border-blue-300 shadow-md' : ''
+              className={`flex border-none items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-all duration-300  ${
+                isCategoryDropdownOpen ? 'bg-blue-50 border-blue-300 shadow-none' : ''
               }`}
               onClick={toggleCategoryDropdown}
             >
-              <Grid3X3 className={`h-6 w-6 transition-all duration-300 ${
-                isCategoryDropdownOpen ? 'text-blue-600 rotate-12' : ''
-              }`} />
+              
               <span className={`font-medium text-base transition-all duration-300 ${
                 isCategoryDropdownOpen ? 'text-blue-600' : ''
               }`}>Categories</span>
@@ -231,7 +229,7 @@ export default function Header() {
                       <div key={category.id} className="group">
                         <div
                           className={`flex items-center justify-between p-2 hover:bg-blue-50 rounded-xl transition-all duration-300 cursor-pointer ${
-                            hoveredCategory === category.id ? 'bg-blue-50 border-l-4 border-blue-500 shadow-sm' : ''
+                            hoveredCategory === category.id ? 'bg-blue-50 border-l-4 shadow-sm' : ''
                           }`}
                           onMouseEnter={() => handleCategoryHover(category.id)}
                           style={{ animationDelay: `${index * 50}ms` }}
@@ -316,16 +314,16 @@ export default function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={handleSearchFocus}
                 onBlur={handleSearchBlur}
-                className={`pl-14 pr-12 py-4 w-full border-2 rounded-2xl transition-all duration-300 text-base ${
-                  isSearchFocused ? 'ring-2 ring-blue-500 border-blue-300 shadow-lg bg-white' : 
-                  isScrolled ? 'border-blue-200 bg-white shadow-sm hover:border-blue-300' : 
-                  'border-gray-300 bg-gray-50 hover:bg-white hover:border-gray-400'
-                } hover:shadow-md focus:shadow-lg`}
+                className={`pl-14 pr-12 py-4 w-full border-1 rounded-2xl transition-all duration-300 text-base focus:ring-0 focus:ring-offset-0 focus:outline-none focus:ring-transparent focus:ring-offset-transparent [&:focus-visible]:ring-0 [&:focus-visible]:ring-offset-0 [&:focus-visible]:outline-none [&:focus-visible]:ring-transparent [&:focus-visible]:ring-offset-transparent ${
+                  isSearchFocused ? 'shadow-md bg-white' : 
+                  isScrolled ? 'bg-white shadow-sm' : 
+                  'border-gray-300 bg-gray-50 hover:bg-white'
+                } hover:shadow-md`}
               />
               <Button
                 type="submit"
                 size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl transition-all duration-300 hover:scale-105"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-transparent text-gray-500 hover:bg-gray-500 rounded-xl transition-all duration-300 hover:scale-105"
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -349,8 +347,8 @@ export default function Header() {
                             onClick={() => handleSearchSelect(suggestion)}
                             className="w-full text-left px-4 py-3 hover:bg-blue-50 rounded-xl transition-all duration-200 flex items-center gap-3 group"
                           >
-                            <TrendingUp className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
-                            <span className="font-medium text-gray-700 group-hover:text-blue-600">{suggestion}</span>
+                            <TrendingUp className="h-4 w-4 text-gray-400 group-hover:text-black" />
+                            <span className="font-medium text-gray-700 group-hover:text-black">{suggestion}</span>
                           </button>
                         ))}
                       </div>
@@ -539,12 +537,12 @@ export default function Header() {
 
         {/* Mobile Search - Enhanced for tablets */}
         <div className="hidden sm:block md:hidden mt-6">
-          <div className="relative group">
+          <div className="relative group hover:bg-transparent">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 group-focus-within:text-blue-500 transition-all duration-300" />
             <Input
               type="text"
               placeholder="Search furniture, decor..."
-              className="pl-12 pr-4 py-4 w-full border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-300 bg-gray-50 hover:bg-white transition-all duration-300 hover:shadow-md focus:shadow-lg text-base"
+              className="pl-12 pr-4 py-4 w-full border-2 border-gray-300 rounded-2xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:ring-transparent focus:ring-offset-transparent [&:focus-visible]:ring-0 [&:focus-visible]:ring-offset-0 [&:focus-visible]:outline-none [&:focus-visible]:ring-transparent [&:focus-visible]:ring-offset-transparent bg-gray-50 hover:bg-white transition-all duration-300 hover:shadow-md text-base"
             />
           </div>
         </div>
@@ -559,7 +557,7 @@ export default function Header() {
                 <Input
                   type="text"
                   placeholder="Search..."
-                  className="pl-12 pr-4 py-3 w-full border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-300 bg-white transition-all duration-300 hover:shadow-md focus:shadow-lg"
+                  className="pl-12 pr-4 py-3 w-full border-2 border-gray-300 rounded-2xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:ring-transparent focus:ring-offset-transparent [&:focus-visible]:ring-0 [&:focus-visible]:ring-offset-0 [&:focus-visible]:outline-none [&:focus-visible]:ring-transparent [&:focus-visible]:ring-offset-transparent bg-white transition-all duration-300 hover:shadow-md"
                 />
               </div>
             </div>

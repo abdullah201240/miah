@@ -115,7 +115,7 @@ export default function MobileTopBar({
               <Input
                 type="text"
                 placeholder="Search furniture, decor..."
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-full focus:ring-0 focus:ring-offset-0 focus:outline-none focus:ring-transparent focus:ring-offset-transparent [&:focus-visible]:ring-0 [&:focus-visible]:ring-offset-0 [&:focus-visible]:outline-none [&:focus-visible]:ring-transparent [&:focus-visible]:ring-offset-transparent transition-all duration-300"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
