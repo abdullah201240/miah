@@ -8,21 +8,104 @@ import { products, categories } from '@/data/products';
 import { Search, SlidersHorizontal, Loader2, ChevronDown, X } from 'lucide-react';
 import MobileLayout from '@/components/layout/MobileLayout';
 import { useSearchParams } from 'next/navigation';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 // Move the main component logic to a separate component
 function ProductsContent() {
   const searchParams = useSearchParams();
+  const { addNotification } = useNotifications();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]); // Default price range
+  // Price range filter states
+  const [minPrice, setMinPrice] = useState<number | ''>('');
+  const [maxPrice, setMaxPrice] = useState<number | ''>('');
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   
   // Pagination state
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Calculate global price range from all products
+  useEffect(() => {
+    if (products.length > 0) {
+      const prices = products.map(p => p.price);
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      // Add some padding to the max value to ensure we can select the highest priced items
+      const paddedMax = Math.ceil(max * 1.1);
+      setPriceRange({ min: Math.floor(min), max: paddedMax });
+    }
+  }, []);
+
+  // Handle min price input change with validation
+  const handleMinPriceChange = (value: number | '') => {
+    if (value === '') {
+      setMinPrice('');
+      return;
+    }
+    
+    // Ensure value is within global min/max range
+    if (value < priceRange.min) {
+      addNotification({
+        title: 'Invalid Minimum Price',
+        description: `Minimum price cannot be less than ৳${priceRange.min}`,
+        type: 'alert',
+        priority: 'medium',
+        read: false
+      });
+      return;
+    }
+    
+    if (maxPrice !== '' && value > maxPrice) {
+      addNotification({
+        title: 'Invalid Price Range',
+        description: `Minimum price cannot be greater than maximum price (৳${maxPrice})`,
+        type: 'alert',
+        priority: 'medium',
+        read: false
+      });
+      return;
+    }
+    
+    setMinPrice(value);
+  };
+
+  // Handle max price input change with validation
+  const handleMaxPriceChange = (value: number | '') => {
+    if (value === '') {
+      setMaxPrice('');
+      return;
+    }
+    
+    // Ensure value is within global min/max range
+    if (value > priceRange.max) {
+      addNotification({
+        title: 'Invalid Maximum Price',
+        description: `Maximum price cannot be greater than ৳${priceRange.max}`,
+        type: 'alert',
+        priority: 'medium',
+        read: false
+      });
+      return;
+    }
+    
+    if (minPrice !== '' && value < minPrice) {
+      addNotification({
+        title: 'Invalid Price Range',
+        description: `Maximum price cannot be less than minimum price (৳${minPrice})`,
+        type: 'alert',
+        priority: 'medium',
+        read: false
+      });
+      return;
+    }
+    
+    setMaxPrice(value);
+  };
 
   // Sync URL search params with local state
   useEffect(() => {
@@ -44,7 +127,7 @@ function ProductsContent() {
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchQuery, sortBy, priceRange]);
+  }, [selectedCategory, searchQuery, sortBy, minPrice, maxPrice]);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -66,10 +149,19 @@ function ProductsContent() {
       );
     }
 
-    // Filter by price range
-    filtered = filtered.filter(product => 
-      product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
+    // Filter by price range with validation
+    filtered = filtered.filter(product => {
+      const productPrice = product.price;
+      // Use priceRange values as defaults if minPrice or maxPrice are empty
+      const min = minPrice === '' ? priceRange.min : minPrice;
+      const max = maxPrice === '' ? priceRange.max : maxPrice;
+      
+      // Ensure min doesn't exceed max
+      const effectiveMin = Math.min(min, max);
+      const effectiveMax = Math.max(min, max);
+      
+      return productPrice >= effectiveMin && productPrice <= effectiveMax;
+    });
 
     // Sort products
     switch (sortBy) {
@@ -103,7 +195,7 @@ function ProductsContent() {
     }
 
     return filtered;
-  }, [selectedCategory, searchQuery, sortBy, priceRange]);
+  }, [selectedCategory, searchQuery, sortBy, minPrice, maxPrice, priceRange.min, priceRange.max]);
 
   // Paginated products for display
   const paginatedProducts = useMemo(() => {
@@ -132,19 +224,14 @@ function ProductsContent() {
     setCurrentPage(1);
   };
 
-  // Handle price range change
-  const handlePriceRangeChange = (min: number, max: number) => {
-    setPriceRange([min, max]);
-  };
-
   // Reset price filter
   const resetPriceFilter = () => {
-    // Find min and max prices in all products
-    const prices = products.map(p => p.price);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    setPriceRange([minPrice, maxPrice]);
+    setMinPrice('');
+    setMaxPrice('');
   };
+
+  // Check if any filters are applied
+  const hasActiveFilters = selectedCategory !== 'all' || minPrice !== '' || maxPrice !== '' || searchQuery !== '';
 
   return (
     <MobileLayout>
@@ -176,10 +263,10 @@ function ProductsContent() {
               />
               
               {/* Price Range Filter */}
-              <div className="bg-white rounded-lg  p-6 mt-6">
+              <div className="bg-white rounded-lg p-6 mt-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Price Range</h3>
-                  {(priceRange[0] > 0 || priceRange[1] < 200) && (
+                  {(minPrice !== '' || maxPrice !== '') && (
                     <button 
                       onClick={resetPriceFilter}
                       className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
@@ -194,38 +281,40 @@ function ProductsContent() {
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Min: ৳{priceRange[0]}</span>
-                      <span className="text-sm font-medium text-gray-700">Max: ৳{priceRange[1]}</span>
+                      <span className="text-sm font-medium text-gray-700">Min: ৳{minPrice === '' ? priceRange.min : minPrice}</span>
+                      <span className="text-sm font-medium text-gray-700">Max: ৳{maxPrice === '' ? priceRange.max : maxPrice}</span>
                     </div>
                     <div className="relative pt-1">
-                      <label htmlFor="minPriceRange" className="sr-only">Minimum price</label>
                       <input
                         type="range"
-                        id="minPriceRange"
-                        min="0"
-                        max="200"
-                        value={priceRange[0]}
-                        onChange={(e) => handlePriceRangeChange(Number(e.target.value), priceRange[1])}
+                        min={priceRange.min}
+                        max={maxPrice === '' ? priceRange.max : maxPrice}
+                        value={minPrice === '' ? priceRange.min : minPrice}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleMinPriceChange(value);
+                        }}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        aria-label="Minimum price range"
+                        aria-label="Minimum price slider"
                       />
-                      <label htmlFor="maxPriceRange" className="sr-only">Maximum price</label>
                       <input
                         type="range"
-                        id="maxPriceRange"
-                        min="0"
-                        max="200"
-                        value={priceRange[1]}
-                        onChange={(e) => handlePriceRangeChange(priceRange[0], Number(e.target.value))}
+                        min={minPrice === '' ? priceRange.min : minPrice}
+                        max={priceRange.max}
+                        value={maxPrice === '' ? priceRange.max : maxPrice}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          handleMaxPriceChange(value);
+                        }}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer absolute top-0 left-0"
                         style={{ pointerEvents: 'none' }}
-                        aria-label="Maximum price range"
+                        aria-label="Maximum price slider"
                       />
                       <div 
                         className="absolute h-2 bg-blue-600 rounded-lg top-0 left-0"
                         style={{
-                          left: `${(priceRange[0] / 200) * 100}%`,
-                          right: `${100 - (priceRange[1] / 200) * 100}%`
+                          left: `${(((minPrice === '' ? priceRange.min : minPrice) - priceRange.min) / (priceRange.max - priceRange.min)) * 100}%`,
+                          right: `${100 - (((maxPrice === '' ? priceRange.max : maxPrice) - priceRange.min) / (priceRange.max - priceRange.min)) * 100}%`
                         }}
                       ></div>
                     </div>
@@ -233,27 +322,33 @@ function ProductsContent() {
                   
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label htmlFor="minPrice" className="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
+                      <label htmlFor="minPriceInput" className="block text-sm font-medium text-gray-700 mb-1">Min Price</label>
                       <input
                         type="number"
-                        id="minPrice"
-                        min="0"
-                        max="200"
-                        value={priceRange[0]}
-                        onChange={(e) => handlePriceRangeChange(Number(e.target.value), priceRange[1])}
+                        id="minPriceInput"
+                        min={priceRange.min}
+                        max={maxPrice === '' ? priceRange.max : maxPrice}
+                        value={minPrice}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? '' : Number(e.target.value);
+                          handleMinPriceChange(value);
+                        }}
                         className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         aria-label="Minimum price"
                       />
                     </div>
                     <div>
-                      <label htmlFor="maxPrice" className="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
+                      <label htmlFor="maxPriceInput" className="block text-sm font-medium text-gray-700 mb-1">Max Price</label>
                       <input
                         type="number"
-                        id="maxPrice"
-                        min="0"
-                        max="200"
-                        value={priceRange[1]}
-                        onChange={(e) => handlePriceRangeChange(priceRange[0], Number(e.target.value))}
+                        id="maxPriceInput"
+                        min={minPrice === '' ? priceRange.min : minPrice}
+                        max={priceRange.max}
+                        value={maxPrice}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? '' : Number(e.target.value);
+                          handleMaxPriceChange(value);
+                        }}
                         className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         aria-label="Maximum price"
                       />
